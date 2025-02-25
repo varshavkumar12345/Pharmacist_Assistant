@@ -1,0 +1,57 @@
+!apt install tesseract-ocr
+!pip install pytesseract
+
+
+import pytesseract
+
+# Set the correct Tesseract path
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
+import cv2
+import pytesseract
+import numpy as np
+from PIL import Image
+
+def preprocess_image(image_path):
+    """
+    Preprocess the image: Convert to grayscale, apply thresholding, and denoise.
+    """
+    img = cv2.imread(image_path)
+
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply GaussianBlur to reduce noise
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Adaptive thresholding (better for different handwriting styles)
+    thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                   cv2.THRESH_BINARY, 11, 2)
+
+    # Denoise (optional, can help improve OCR results)
+    denoised = cv2.fastNlMeansDenoising(thresh, None, 30, 7, 21)
+
+    return denoised
+
+def extract_text_from_image(image_path):
+    """
+    Extract text from the given image using Tesseract OCR.
+    """
+    processed_img = preprocess_image(image_path)
+
+    # Save the processed image (for debugging)
+    cv2.imwrite("processed_image.png", processed_img)
+
+    # Convert processed image to PIL format for Tesseract
+    pil_img = Image.fromarray(processed_img)
+
+    # Perform OCR
+    extracted_text = pytesseract.image_to_string(pil_img, config="--psm 6")
+
+    return extracted_text
+
+if __name__ == "__main__":
+    image_path = "/content/prescription_sample.png"  # Replace with your prescription image
+    extracted_text = extract_text_from_image(image_path)
+
+    print("Extracted Prescription Text:\n", extracted_text)
