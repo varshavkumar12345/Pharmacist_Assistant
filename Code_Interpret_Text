@@ -1,0 +1,6 @@
+from groq import Groq
+
+# Initialize Groq client with your API key
+client = Groq(api_key="gsk_gRDJuILifvaQlWB0LGNxWGdyb3FYulVjHudoxyVP")
+
+base_prompt=""
