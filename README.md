@@ -9,3 +9,7 @@ Run the commands to download Tessaract:
 !apt install tesseract-ocr
 !pip install pytesseract
 
+
+
+
+Use Groq API key for NLP https://groq.com/
